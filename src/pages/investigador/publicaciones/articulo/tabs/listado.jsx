@@ -51,6 +51,12 @@ const FILTER_PROPS = [
     operators: stringOperators,
   },
   {
+    propertyLabel: "Filiación UNMSM",
+    key: "filiacion",
+    groupValuesLabel: "filiacion",
+    operators: stringOperators,
+  },
+  {
     propertyLabel: "Estado",
     key: "estado",
     groupValuesLabel: "Estados",
@@ -108,10 +114,10 @@ const columnDefinitions = [
           item.filiacion == "No"
             ? "red"
             : item.filiacion == "Si"
-            ? "blue"
-            : item.filiacion == "Sin Especificar"
-            ? "grey"
-            : "grey"
+              ? "blue"
+              : item.filiacion == "Sin Especificar"
+                ? "grey"
+                : "grey"
         }
       >
         {item.filiacion}
@@ -128,20 +134,20 @@ const columnDefinitions = [
           item.estado == "Eliminado"
             ? "red"
             : item.estado == "Registrado"
-            ? "green"
-            : item.estado == "Observado"
-            ? "grey"
-            : item.estado == "Enviado"
-            ? "blue"
-            : item.estado == "En proceso"
-            ? "grey"
-            : item.estado == "Anulado"
-            ? "red"
-            : item.estado == "No registrado"
-            ? "grey"
-            : item.estado == "Duplicado"
-            ? "red"
-            : "grey"
+              ? "green"
+              : item.estado == "Observado"
+                ? "grey"
+                : item.estado == "Enviado"
+                  ? "blue"
+                  : item.estado == "En proceso"
+                    ? "grey"
+                    : item.estado == "Anulado"
+                      ? "red"
+                      : item.estado == "No registrado"
+                        ? "grey"
+                        : item.estado == "Duplicado"
+                          ? "red"
+                          : "grey"
         }
       >
         {item.estado}
@@ -212,6 +218,7 @@ export default () => {
     setLoading(false);
   };
 
+
   const reporte = async () => {
     setLoadingBtn(true);
     const res = await axiosBase.get(
@@ -272,8 +279,9 @@ export default () => {
                     } else if (detail.id == "action_3") {
                       reporte();
                     } else if (detail.id == "action_4") {
-                      console.log("Eliminar Filiacion", detail.id);
+                      console.log("Eliminar Filiacion", detail.id)
                       setModal("eliminarFiliacion");
+  
                     }
                   }}
                   items={[
@@ -281,9 +289,8 @@ export default () => {
                       text: "Editar",
                       id: "action_1",
                       disabled:
-                        collectionProps.selectedItems[0]?.estado !=
-                          "Observado" &&
-                        collectionProps.selectedItems[0]?.estado != "En proceso"
+                        collectionProps.selectedItems[0]?.estado != "Observado" &&
+                          collectionProps.selectedItems[0]?.estado != "En proceso"
                           ? true
                           : false,
                     },
@@ -299,9 +306,8 @@ export default () => {
                       text: "Eliminar Filiación",
                       id: "action_4",
                       disabled:
-                        collectionProps.selectedItems[0]?.estado !=
-                          "En proceso" &&
-                        collectionProps.selectedItems[0]?.filiacion != "No"
+                        collectionProps.selectedItems[0]?.estado != "En proceso" &&
+                          collectionProps.selectedItems[0]?.filiacion != "No"
                           ? true
                           : false,
                     },
@@ -350,18 +356,12 @@ export default () => {
       />
 
       {modal === "eliminarPublicacion" ? (
-        <ModalEliminarPublicacion
-          close={() => setModal("")}
-          reload={getData}
-          id={collectionProps.selectedItems[0].id}
-        />
+        <ModalEliminarPublicacion close={() => setModal("")} reload={getData} id={collectionProps.selectedItems[0].id} />
       ) : modal === "eliminarFiliacion" ? (
-        <ModalEliminarFiliacion
-          close={() => setModal("")}
-          reload={getData}
-          id={collectionProps.selectedItems[0].id}
-        />
+        <ModalEliminarFiliacion close={() => setModal("")} reload={getData} id={collectionProps.selectedItems[0].id} />
       ) : null}
     </>
   );
 };
+
+

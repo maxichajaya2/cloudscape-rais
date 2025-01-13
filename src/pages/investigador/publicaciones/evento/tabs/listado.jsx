@@ -14,6 +14,8 @@ import { useCollection } from "@cloudscape-design/collection-hooks";
 import queryString from "query-string";
 import axiosBase from "../../../../../api/axios";
 import NotificationContext from "../../../../../providers/notificationProvider";
+import ModalEliminarFiliacion from "../../components/modalEliminarFiliacion";
+import ModalEliminarPublicacion from "../../components/modalEliminarPublicacion";
 
 const stringOperators = [":", "!:", "=", "!=", "^", "!^"];
 
@@ -49,6 +51,12 @@ const FILTER_PROPS = [
     operators: stringOperators,
   },
   {
+    propertyLabel: "Filiación UNMSM",
+    key: "filiacion",
+    groupValuesLabel: "filiacion",
+    operators: stringOperators,
+  },
+  {
     propertyLabel: "Estado",
     key: "estado",
     groupValuesLabel: "Estados",
@@ -69,12 +77,14 @@ const columnDefinitions = [
     header: "Título",
     cell: (item) => item.titulo,
     sortingField: "titulo",
+    minWidth: 400,
   },
   {
     id: "revista",
     header: "Revista",
     cell: (item) => item.revista,
     sortingField: "revista",
+    minWidth: 300,
   },
   {
     id: "año_publicacion",
@@ -93,6 +103,27 @@ const columnDefinitions = [
     header: "Observaciones",
     cell: (item) => item.observaciones_usuario,
     sortingField: "observaciones_usuario",
+    minWidth: 400,
+  },
+  {
+    id: "filiacion",
+    header: "Filiación UNMSM",
+    cell: (item) => (
+      <Badge
+        color={
+          item.filiacion == "No"
+            ? "red"
+            : item.filiacion == "Si"
+              ? "blue"
+              : item.filiacion == "Sin Especificar"
+                ? "grey"
+                : "grey"
+        }
+      >
+        {item.filiacion}
+      </Badge>
+    ),
+    sortingField: "filiacion",
   },
   {
     id: "estado",
@@ -132,6 +163,7 @@ const columnDisplay = [
   { id: "revista", visible: true },
   { id: "año_publicacion", visible: true },
   { id: "puntaje", visible: true },
+  { id: "filiacion", visible: true },
   { id: "observaciones_usuario", visible: true },
   { id: "estado", visible: true },
 ];
@@ -144,6 +176,7 @@ export default () => {
   const [loading, setLoading] = useState(true);
   const [loadingBtn, setLoadingBtn] = useState(false);
   const [distributions, setDistribution] = useState([]);
+  const [modal, setModal] = useState("");
   const {
     items,
     actions,
@@ -203,28 +236,13 @@ export default () => {
     setLoadingBtn(false);
   };
 
-  const eliminar = async () => {
-    setLoadingBtn(true);
-    const res = await axiosBase.delete(
-      "investigador/publicaciones/utils/eliminarPublicacion",
-      {
-        params: {
-          id: collectionProps.selectedItems[0].id,
-        },
-      }
-    );
-    const data = res.data;
-    pushNotification(data.detail, data.message, notifications.length + 1);
-    setLoadingBtn(false);
-    getData();
-  };
-
   //  Effects
   useEffect(() => {
     getData();
   }, []);
 
   return (
+    <>
     <Table
       {...collectionProps}
       trackBy="id"
@@ -236,6 +254,7 @@ export default () => {
       resizableColumns
       enableKeyboardNavigation
       selectionType="single"
+      wrapLines
       onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
       header={
         <Header
@@ -255,11 +274,15 @@ export default () => {
                       collectionProps.selectedItems[0].step +
                       "?" +
                       query;
-                  } else if (detail.id == "action_2") {
-                    eliminar();
-                  } else if (detail.id == "action_3") {
-                    reporte();
-                  }
+                    } else if (detail.id == "action_2") {
+                      setModal("eliminarPublicacion");
+                    } else if (detail.id == "action_3") {
+                      reporte();
+                    } else if (detail.id == "action_4") {
+                      console.log("Eliminar Filiacion", detail.id)
+                      setModal("eliminarFiliacion");
+
+                    }
                 }}
                 items={[
                   {
@@ -267,7 +290,7 @@ export default () => {
                     id: "action_1",
                     disabled:
                       collectionProps.selectedItems[0]?.estado != "Observado" &&
-                      collectionProps.selectedItems[0]?.estado != "En proceso"
+                        collectionProps.selectedItems[0]?.estado != "En proceso"
                         ? true
                         : false,
                   },
@@ -280,12 +303,17 @@ export default () => {
                         : false,
                   },
                   {
+                    text: "Eliminar Filiación",
+                    id: "action_4",
+                    disabled:
+                      collectionProps.selectedItems[0]?.estado != "En proceso" &&
+                        collectionProps.selectedItems[0]?.filiacion != "No"
+                        ? true
+                        : false,
+                  },
+                  {
                     text: "Reporte",
                     id: "action_3",
-                    disabled:
-                      collectionProps.selectedItems[0]?.estado ==
-                        "En proceso" ||
-                      collectionProps.selectedItems[0]?.estado == "Observado",
                   },
                 ]}
               >
@@ -326,5 +354,11 @@ export default () => {
         </Box>
       }
     />
+     {modal === "eliminarPublicacion" ? (
+            <ModalEliminarPublicacion close={() => setModal("")} reload={getData} id={collectionProps.selectedItems[0].id} />
+          ) : modal === "eliminarFiliacion" ? (
+            <ModalEliminarFiliacion close={() => setModal("")} reload={getData} id={collectionProps.selectedItems[0].id} />
+          ) : null}
+    </>
   );
 };

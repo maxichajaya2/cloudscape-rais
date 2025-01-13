@@ -14,6 +14,8 @@ import { useState, useEffect } from "react";
 import { useCollection } from "@cloudscape-design/collection-hooks";
 import queryString from "query-string";
 import axiosBase from "../../../../api/axios";
+import ModalEliminarConvocatoria from "./components/modalEliminarConvocatoria";
+
 
 const breadcrumbs = [
   {
@@ -44,26 +46,26 @@ const columnDefinitions = [
           item.estado == "Eliminado"
             ? "red"
             : item.estado == "No aprobado"
-            ? "grey"
-            : item.estado == "Aprobado"
-            ? "green"
-            : item.estado == "En evaluación"
-            ? "blue"
-            : item.estado == "Enviado"
-            ? "blue"
-            : item.estado == "En proceso"
-            ? "grey"
-            : item.estado == "Anulado"
-            ? "red"
-            : item.estado == "Sustentado"
-            ? "blue"
-            : item.estado == "En ejecución"
-            ? "blue"
-            : item.estado == "Ejecutado"
-            ? "green"
-            : item.estado == "Concluido"
-            ? "green"
-            : "red"
+              ? "grey"
+              : item.estado == "Aprobado"
+                ? "green"
+                : item.estado == "En evaluación"
+                  ? "blue"
+                  : item.estado == "Enviado"
+                    ? "blue"
+                    : item.estado == "En proceso"
+                      ? "grey"
+                      : item.estado == "Anulado"
+                        ? "red"
+                        : item.estado == "Sustentado"
+                          ? "blue"
+                          : item.estado == "En ejecución"
+                            ? "blue"
+                            : item.estado == "Ejecutado"
+                              ? "green"
+                              : item.estado == "Concluido"
+                                ? "green"
+                                : "red"
         }
       >
         {item.estado}
@@ -83,8 +85,8 @@ export default function Registro_psinfipu_0() {
   const [validationErrors, setValidationErrors] = useState([]);
   const [distributions, setDistribution] = useState([]);
   const [loadingReporte, setLoadingReporte] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
-  const [selectedEstado, setSelectedEstado] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(true);
+  const [modalEliminar, setModalEliminar] = useState("");
   const { items, actions, collectionProps } = useCollection(distributions, {
     sorting: {},
     selection: {},
@@ -145,8 +147,8 @@ export default function Registro_psinfipu_0() {
 
   //  Effects
   useEffect(() => {
-    getData();
     getValidacion();
+    getData();
   }, []);
 
   return (
@@ -167,12 +169,12 @@ export default function Registro_psinfipu_0() {
                 <div style={{ marginBottom: "20px" }}>
                   {" "}
                   {/* Espacio entre Alert y Table */}
-                  {validationErrors.length > 0 && ( // Verificar si hay errores
+                  {validationErrors.length > 0 && alertVisible && ( // Verificar si hay errores
                     <Alert
                       style={{ paddingTop: "16px", paddingBottom: "16px" }}
                       dismissible
-                      statusIconAriaLabel="Error"
-                      type="error"
+                      onDismiss={() => setAlertVisible(false)}
+                      type="warning"
                       header="No puede postular a otra convocatoria por los siguientes motivos:"
                     >
                       <ul style={{ paddingLeft: "20px", margin: "0" }}>
@@ -228,7 +230,7 @@ export default function Registro_psinfipu_0() {
                             disabled={
                               !collectionProps.selectedItems.length ||
                               collectionProps.selectedItems[0]?.estado !=
-                                "En proceso"
+                              "En proceso"
                             }
                             variant="normal"
                             onItemClick={({ detail }) => {
@@ -239,7 +241,8 @@ export default function Registro_psinfipu_0() {
                                 window.location.href =
                                   "pconfigi/paso1?" + query;
                               } else if (detail.id == "action_1_2") {
-                                setType("delete");
+                                setModalEliminar("eliminarConvocatoria");
+                              
                               }
                             }}
                             items={[
@@ -260,7 +263,7 @@ export default function Registro_psinfipu_0() {
                             onClick={() => {
                               window.location.href = "pconfigi/paso1";
                             }}
-                            disabled={validationErrors.length > 0} // Deshabilitar si hay errores
+                            disabled={validationErrors.length > 0 || loading} // Deshabilitar si hay errores
                           >
                             Registrar
                           </Button>
@@ -282,6 +285,10 @@ export default function Registro_psinfipu_0() {
                     </Box>
                   }
                 />
+
+                {modalEliminar === "eliminarConvocatoria" ? (
+                  <ModalEliminarConvocatoria close={() => setModalEliminar("")} reload={getData} id={collectionProps.selectedItems[0]["id"]} />
+                ) : null}
               </>
             ),
           },
