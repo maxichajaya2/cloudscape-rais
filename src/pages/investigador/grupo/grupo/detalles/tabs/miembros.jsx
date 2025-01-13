@@ -8,6 +8,8 @@ import {
   Pagination,
   FormField,
   Select,
+  Link,
+  Alert,
 } from "@cloudscape-design/components";
 import { useCollection } from "@cloudscape-design/collection-hooks";
 import { useEffect, useState } from "react";
@@ -51,89 +53,113 @@ const FILTER_PROPS = [
 
 const columnDefinitions = [
   {
-    id: "condicion",
-    header: "Condicion",
-    cell: (item) => item.condicion,
-    sortingField: "condicion",
-    isRowHeader: true,
-  },
-  {
     id: "cargo",
     header: "Cargo",
     cell: (item) => item.cargo,
-    sortingField: "cargo",
+    // sortingField: "cargo",
+    minWidth: 150,
+  },
+  {
+    id: "condicion",
+    header: "Condicion",
+    cell: (item) => item.condicion,
+    // sortingField: "condicion",
+    minWidth: 150,
   },
   {
     id: "doc_numero",
     header: "Documento de identidad",
     cell: (item) => item.doc_numero,
-    sortingField: "doc_numero",
+    // sortingField: "doc_numero",
+    minWidth: 150,
   },
   {
     id: "nombres",
     header: "Nombres",
     cell: (item) => item.nombres,
-    sortingField: "nombres",
+    // sortingField: "nombres",
+    minWidth: 220,
   },
   {
     id: "codigo_orcid",
     header: "Código orcid",
-    cell: (item) => item.codigo_orcid,
-    sortingField: "codigo_orcid",
+    cell: (item) => (
+      <Link href={`https://orcid.org/${item.codigo_orcid}`} target="_blank">
+        {item.codigo_orcid}
+      </Link>
+    ),
+    // sortingField: "codigo_orcid",
+    minWidth: 200,
   },
   {
     id: "google_scholar",
     header: "Google Scholar",
-    cell: (item) => item.google_scholar,
-    sortingField: "google_scholar",
+    cell: (item) => (
+      <Link href={item.google_scholar} target="_blank">
+        {item.google_scholar}
+      </Link>
+    ),
+    // sortingField: "google_scholar",
+    minWidth: 300,
   },
   {
     id: "cti_vitae",
     header: "CTI Vitae",
-    cell: (item) => item.cti_vitae,
-    sortingField: "cti_vitae",
+    cell: (item) => (
+      <Link
+        href={`https://ctivitae.concytec.gob.pe/appDirectorioCTI/VerDatosInvestigador.do?id_investigador=${item.cti_vitae}`}
+        target="_blank"
+      >
+        {item.cti_vitae}
+      </Link>
+    ),
+    // sortingField: "cti_vitae",
+    minWidth: 150,
   },
   {
     id: "tipo",
     header: "Tipo",
     cell: (item) => item.tipo,
-    sortingField: "tipo",
+    // sortingField: "tipo",
+    minWidth: 200,
   },
   {
     id: "facultad",
     header: "Facultad",
     cell: (item) => item.facultad,
-    sortingField: "facultad",
+    // sortingField: "facultad",
+    minWidth: 200,
   },
   {
     id: "tesista",
     header: "Tesista",
     cell: (item) => item.tesista,
-    sortingField: "tesista",
+    // sortingField: "tesista",
   },
   {
     id: "proyectos",
     header: "Proyectos en ejecución",
     cell: (item) => item.proyectos,
-    sortingField: "proyectos",
+    // sortingField: "proyectos",
+    minWidth: 150,
   },
   {
     id: "fecha_inclusion",
     header: "Fecha de inclusión",
     cell: (item) => item.fecha_inclusion,
-    sortingField: "fecha_inclusion",
+    // sortingField: "fecha_inclusion",
   },
   {
     id: "fecha_exclusion",
     header: "Fecha de exclusión",
     cell: (item) => item.fecha_exclusion,
-    sortingField: "fecha_exclusion",
+    // sortingField: "fecha_exclusion",
   },
 ];
 
 const columnDisplay = [
-  { id: "condicion", visible: true },
   { id: "cargo", visible: true },
+  { id: "condicion", visible: true },
   { id: "doc_numero", visible: true },
   { id: "nombres", visible: true },
   { id: "codigo_orcid", visible: true },
@@ -184,6 +210,7 @@ export default ({ grupo_estado }) => {
   });
   const [enableBtn, setEnableBtn] = useState(false);
   const [typeModal, setTypeModal] = useState("");
+  const [coordinador, setCoordinador] = useState("");
   const [tipoMiembros, setTipoMiembros] = useState({
     label: "Integrantes",
     value: 1,
@@ -207,11 +234,23 @@ export default ({ grupo_estado }) => {
     setLoading(false);
   };
 
+  const coordinadorGI = async () => {
+    const res = await axiosBase.get("investigador/grupo/coordinadorGI", {
+      params: {
+        grupo_id: id,
+      },
+    });
+    const data = await res.data;
+    setCoordinador(data);
+  };
+
   //  Effects
   useEffect(() => {
     getData();
+    coordinadorGI();
   }, [tipoMiembros]);
 
+  console.log("coordinador", coordinador);
   useEffect(() => {
     if (selectedItems.length > 0) {
       setEnableBtn(true);
@@ -222,171 +261,189 @@ export default ({ grupo_estado }) => {
 
   return (
     <>
-      <Table
-        {...collectionProps}
-        trackBy="id"
-        items={items}
-        columnDefinitions={columnDefinitions}
-        columnDisplay={columnDisplay}
-        loading={loading}
-        loadingText="Cargando datos"
-        resizableColumns
-        enableKeyboardNavigation
-        selectionType="single"
-        selectedItems={selectedItems}
-        onSelectionChange={({ detail }) =>
-          setSelectedItems(detail.selectedItems)
-        }
-        ariaLabels={{
-          selectionGroupLabel: "Items selection",
-          allItemsSelectionLabel: ({ selectedItems }) =>
-            `${selectedItems.length} ${
-              selectedItems.length === 1 ? "item" : "items"
-            } selected`,
-          itemSelectionLabel: ({ selectedItems }, item) => item.name,
+      <div
+        style={{
+          marginBottom: coordinador !== 1 ? "20px" : "0",
+          paddingBottom: coordinador !== 1 ? "20px" : "0",
         }}
-        empty={
-          <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
-            <SpaceBetween size="m">
-              <b>No hay registros...</b>
-            </SpaceBetween>
-          </Box>
-        }
-        filter={
-          <PropertyFilter
-            {...propertyFilterProps}
-            filteringPlaceholder="Buscar miembro"
-            countText={`${filteredItemsCount} coincidencias`}
-            expandToViewport
-            customControl={
-              <FormField label="Tipo">
-                <Select
-                  disabled={loading}
-                  expandToViewport
-                  selectedOption={tipoMiembros}
-                  onChange={({ detail }) =>
-                    setTipoMiembros(detail.selectedOption)
-                  }
-                  options={[
-                    { label: "Integrantes", value: 1 },
-                    { label: "Ex integrantes", value: 0 },
-                  ]}
-                />
-              </FormField>
-            }
-          />
-        }
-        header={
-          <Header
-            counter={"(" + distributions.length + ")"}
-            actions={
-              <SpaceBetween direction="horizontal" size="xs">
-                <ButtonDropdown
-                  disabled={loading || grupo_estado < 0}
-                  expandableGroups
-                  items={[
-                    {
-                      id: "action_1_2",
-                      text: "Incluir adherente",
-                      items: [
-                        {
-                          id: "action_1_2_1",
-                          text: "Externo",
-                        },
-                        {
-                          id: "action_1_2_2",
-                          text: "Estudiante UNMSM",
-                        },
-                        {
-                          id: "action_1_2_3",
-                          text: "Egresado UNMSM",
-                        },
-                      ],
-                    },
-                  ]}
-                  onItemClick={({ detail }) => {
-                    if (detail.id == "action_1_2_1") {
-                      setIncluirVisible(true);
-                      setTypeModal("Externo");
-                    } else if (detail.id == "action_1_2_2") {
-                      setIncluirVisible(true);
-                      setTypeModal("Estudiante");
-                    } else if (detail.id == "action_1_2_3") {
-                      setIncluirVisible(true);
-                      setTypeModal("Egresado");
-                    }
-                  }}
-                >
-                  Acciones para el grupo
-                </ButtonDropdown>
-                <ButtonDropdown
-                  disabled={!enableBtn || grupo_estado < 0}
-                  variant="primary"
-                  items={[
-                    {
-                      text: "Excluir",
-                      id: "action_2_1",
-                      disabled: false,
-                    },
-                    {
-                      text: "Visualizar",
-                      id: "action_2_2",
-                      disabled: false,
-                    },
-                  ]}
-                  onItemClick={({ detail }) => {
-                    if (detail.id == "action_2_1") {
-                      setIncluirVisible(true);
-                      setTypeModal("Excluir");
-                    } else if (detail.id == "action_2_2") {
-                      setIncluirVisible(true);
-                      setTypeModal("Visualizar");
-                    }
-                  }}
-                >
-                  Acciones para miembros
-                </ButtonDropdown>
+      >
+        {coordinador !== 1 ? (
+          <Alert statusIconAriaLabel="Info" header="Información Importante">
+            LOS GRUPOS DE INVESTIGACION DE LA UNIVERSIDAD NACIONAL MAYOR DE SAN
+            MARCOS" (RR.N° 014914-2024-R/UNMSM) en su subtítulo VII. Aspectos
+            específicos en su punto 3 La inclusión o exclusión de miembros del
+            GI. Inciso a , c y d, especifica que la inclusión debe ser
+            solicitado por el Coordinador del GI
+          </Alert>
+        ) : null}
+        <Table
+          {...collectionProps}
+          trackBy="id"
+          items={items}
+          columnDefinitions={columnDefinitions}
+          columnDisplay={columnDisplay}
+          loading={loading}
+          loadingText="Cargando datos"
+          resizableColumns
+          enableKeyboardNavigation
+          wrapLines
+          onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
+          selectionType="single"
+          selectedItems={selectedItems}
+          onSelectionChange={({ detail }) =>
+            setSelectedItems(detail.selectedItems)
+          }
+          ariaLabels={{
+            selectionGroupLabel: "Items selection",
+            allItemsSelectionLabel: ({ selectedItems }) =>
+              `${selectedItems.length} ${
+                selectedItems.length === 1 ? "item" : "items"
+              } selected`,
+            itemSelectionLabel: ({ selectedItems }, item) => item.name,
+          }}
+          empty={
+            <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
+              <SpaceBetween size="m">
+                <b>No hay registros...</b>
               </SpaceBetween>
-            }
-          >
-            Miembros del grupo
-          </Header>
-        }
-        pagination={<Pagination {...paginationProps} />}
-      />
-      {incluirVisible &&
-        (typeModal == "Externo" ? (
-          <ModalIncluirExterno
-            visible={incluirVisible}
-            setVisible={setIncluirVisible}
-            reload={getData}
-          />
-        ) : typeModal == "Estudiante" ? (
-          <ModalIncluirEstudiante
-            visible={incluirVisible}
-            setVisible={setIncluirVisible}
-            reload={getData}
-          />
-        ) : typeModal == "Egresado" ? (
-          <ModalIncluirEgresado
-            visible={incluirVisible}
-            setVisible={setIncluirVisible}
-            reload={getData}
-          />
-        ) : typeModal == "Excluir" ? (
-          <ModalExcluirMiembro
-            visible={incluirVisible}
-            setVisible={setIncluirVisible}
-            reload={getData}
-            item={selectedItems}
-          />
-        ) : (
-          <ModalInformacionMiembro
-            visible={incluirVisible}
-            setVisible={setIncluirVisible}
-            id={selectedItems[0].id}
-          />
-        ))}
+            </Box>
+          }
+          filter={
+            <PropertyFilter
+              {...propertyFilterProps}
+              filteringPlaceholder="Buscar miembro"
+              countText={`${filteredItemsCount} coincidencias`}
+              expandToViewport
+              customControl={
+                <FormField label="Tipo">
+                  <Select
+                    disabled={loading}
+                    expandToViewport
+                    selectedOption={tipoMiembros}
+                    onChange={({ detail }) =>
+                      setTipoMiembros(detail.selectedOption)
+                    }
+                    options={[
+                      { label: "Integrantes", value: 1 },
+                      { label: "Ex integrantes", value: 0 },
+                    ]}
+                  />
+                </FormField>
+              }
+            />
+          }
+          header={
+            <Header
+              counter={"(" + distributions.length + ")"}
+              actions={
+                <SpaceBetween direction="horizontal" size="xs">
+                  <ButtonDropdown
+                    disabled={loading || grupo_estado < 0 || coordinador != 1}
+                    expandableGroups
+                    items={[
+                      {
+                        id: "action_1_2",
+                        text: "Incluir adherente",
+                        items: [
+                          {
+                            id: "action_1_2_1",
+                            text: "Externo",
+                          },
+                          {
+                            id: "action_1_2_2",
+                            text: "Estudiante UNMSM",
+                          },
+                          {
+                            id: "action_1_2_3",
+                            text: "Egresado UNMSM",
+                          },
+                        ],
+                      },
+                    ]}
+                    onItemClick={({ detail }) => {
+                      if (detail.id == "action_1_2_1") {
+                        setIncluirVisible(true);
+                        setTypeModal("Externo");
+                      } else if (detail.id == "action_1_2_2") {
+                        setIncluirVisible(true);
+                        setTypeModal("Estudiante");
+                      } else if (detail.id == "action_1_2_3") {
+                        setIncluirVisible(true);
+                        setTypeModal("Egresado");
+                      }
+                    }}
+                  >
+                    Acciones para el grupo
+                  </ButtonDropdown>
+                  <ButtonDropdown
+                    disabled={!enableBtn || grupo_estado < 0}
+                    variant="primary"
+                    items={[
+                      {
+                        text: "Excluir",
+                        id: "action_2_1",
+                        disabled: coordinador != 1,
+                      },
+                      {
+                        text: "Visualizar",
+                        id: "action_2_2",
+                        disabled: false,
+                      },
+                    ]}
+                    onItemClick={({ detail }) => {
+                      if (detail.id == "action_2_1") {
+                        setIncluirVisible(true);
+                        setTypeModal("Excluir");
+                      } else if (detail.id == "action_2_2") {
+                        setIncluirVisible(true);
+                        setTypeModal("Visualizar");
+                      }
+                    }}
+                  >
+                    Acciones para miembros
+                  </ButtonDropdown>
+                </SpaceBetween>
+              }
+            >
+              Miembros del grupo
+            </Header>
+          }
+          pagination={<Pagination {...paginationProps} />}
+        />
+        {incluirVisible &&
+          (typeModal == "Externo" ? (
+            <ModalIncluirExterno
+              visible={incluirVisible}
+              setVisible={setIncluirVisible}
+              reload={getData}
+            />
+          ) : typeModal == "Estudiante" ? (
+            <ModalIncluirEstudiante
+              visible={incluirVisible}
+              setVisible={setIncluirVisible}
+              reload={getData}
+            />
+          ) : typeModal == "Egresado" ? (
+            <ModalIncluirEgresado
+              visible={incluirVisible}
+              setVisible={setIncluirVisible}
+              reload={getData}
+            />
+          ) : typeModal == "Excluir" ? (
+            <ModalExcluirMiembro
+              visible={incluirVisible}
+              setVisible={setIncluirVisible}
+              reload={getData}
+              item={selectedItems}
+            />
+          ) : (
+            <ModalInformacionMiembro
+              visible={incluirVisible}
+              setVisible={setIncluirVisible}
+              id={selectedItems[0].id}
+            />
+          ))}
+      </div>
     </>
   );
 };
