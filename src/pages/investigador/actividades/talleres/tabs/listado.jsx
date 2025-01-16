@@ -101,26 +101,26 @@ const columnDefinitions = [
           item.estado == "Eliminado"
             ? "red"
             : item.estado == "No aprobado"
-            ? "grey"
-            : item.estado == "Aprobado"
-            ? "green"
-            : item.estado == "En evaluación"
-            ? "blue"
-            : item.estado == "Enviado"
-            ? "blue"
-            : item.estado == "En proceso"
-            ? "grey"
-            : item.estado == "Anulado"
-            ? "red"
-            : item.estado == "Sustentado"
-            ? "blue"
-            : item.estado == "En ejecución"
-            ? "blue"
-            : item.estado == "Ejecutado"
-            ? "green"
-            : item.estado == "Concluido"
-            ? "green"
-            : "red"
+              ? "grey"
+              : item.estado == "Aprobado"
+                ? "green"
+                : item.estado == "En evaluación"
+                  ? "blue"
+                  : item.estado == "Enviado"
+                    ? "blue"
+                    : item.estado == "En proceso"
+                      ? "grey"
+                      : item.estado == "Anulado"
+                        ? "red"
+                        : item.estado == "Sustentado"
+                          ? "blue"
+                          : item.estado == "En ejecución"
+                            ? "blue"
+                            : item.estado == "Ejecutado"
+                              ? "green"
+                              : item.estado == "Concluido"
+                                ? "green"
+                                : "red"
         }
       >
         {item.estado}
@@ -146,6 +146,7 @@ export default () => {
   const [distributions, setDistribution] = useState([]);
   const {
     items,
+    actions,
     filteredItemsCount,
     collectionProps,
     paginationProps,
@@ -198,8 +199,9 @@ export default () => {
       columnDisplay={columnDisplay}
       loading={loading}
       loadingText="Cargando datos"
-      resizableColumns
+      wrapLines
       enableKeyboardNavigation
+      onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
       selectionType="single"
       header={
         <Header

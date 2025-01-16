@@ -119,7 +119,7 @@ export default function Registro_psinfipu_0() {
   const reporte = async () => {
     setLoadingReporte(true);
     const res = await axiosBase.get(
-      "investigador/convocatorias/picv/reporte?" + query,
+      "investigador/convocatorias/picv/reporte",
       {
         params: {
           proyecto_id,
@@ -132,6 +132,7 @@ export default function Registro_psinfipu_0() {
     window.open(url, "_blank");
     setLoadingReporte(false);
   };
+
 
   //  Effects
   useEffect(() => {

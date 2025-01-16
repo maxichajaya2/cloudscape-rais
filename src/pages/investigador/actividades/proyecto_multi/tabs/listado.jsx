@@ -85,6 +85,7 @@ const columnDefinitions = [
     header: "Condición",
     cell: (item) => item.condicion,
     sortingField: "condicion",
+    minWidth: 170,
   },
   {
     id: "periodo",
@@ -146,6 +147,7 @@ export default () => {
   const [distributions, setDistribution] = useState([]);
   const {
     items,
+    actions,
     filteredItemsCount,
     collectionProps,
     paginationProps,
@@ -196,9 +198,10 @@ export default () => {
       columnDisplay={columnDisplay}
       loading={loading}
       loadingText="Cargando datos"
-      resizableColumns
+      wrapLines
       enableKeyboardNavigation
       selectionType="single"
+      onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
       header={
         <Header
           actions={

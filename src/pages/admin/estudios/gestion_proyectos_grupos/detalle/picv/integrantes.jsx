@@ -3,6 +3,7 @@ import {
   Box,
   SpaceBetween,
   Header,
+  Button,
 } from "@cloudscape-design/components";
 
 export default ({ data, loading }) => {
@@ -27,7 +28,19 @@ export default ({ data, loading }) => {
         {
           id: "tipo_investigador",
           header: "Tipo de investigador",
-          cell: (item) => item.tipo_investigador,
+          cell: (item) => item.tipo,
+        },
+        {
+          id: "url",
+          header: "Carta de compromiso",
+          cell: (item) => (
+            <Button
+              variant="inline-icon"
+              href={item.url}
+              target="_blank"
+              iconName="file"
+            />
+          ),
         },
       ]}
       columnDisplay={[
@@ -35,12 +48,13 @@ export default ({ data, loading }) => {
         { id: "tipo_integrante", visible: true },
         { id: "nombre", visible: true },
         { id: "tipo_investigador", visible: true },
+        { id: "url", visible: true },
       ]}
       enableKeyboardNavigation
       items={data}
       loadingText="Cargando datos"
       loading={loading}
-      resizableColumns
+      wrapLines
       trackBy="id"
       empty={
         <Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">

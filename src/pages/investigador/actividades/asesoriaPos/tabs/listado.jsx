@@ -146,6 +146,7 @@ export default () => {
   const [distributions, setDistribution] = useState([]);
   const {
     items,
+    actions,
     filteredItemsCount,
     collectionProps,
     paginationProps,
@@ -198,8 +199,9 @@ export default () => {
       columnDisplay={columnDisplay}
       loading={loading}
       loadingText="Cargando datos"
-      resizableColumns
+      wrapLines
       enableKeyboardNavigation
+      onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
       selectionType="single"
       header={
         <Header
