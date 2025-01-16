@@ -164,6 +164,7 @@ export default ({ id }) => {
   const [loading, setLoading] = useState(true);
   const [distributions, setDistribution] = useState([]);
   const {
+    actions,
     items,
     filteredItemsCount,
     collectionProps,
@@ -224,7 +225,8 @@ export default ({ id }) => {
         columnDisplay={columnDisplay}
         loading={loading}
         loadingText="Cargando datos"
-        resizableColumns
+        wrapLines
+        onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
         enableKeyboardNavigation
         selectionType="single"
         header={
