@@ -264,6 +264,8 @@ export default function Editar_investigador() {
     setFormValues(initialData);
   };
 
+  console.log(formValues);
+
   const saveData = async () => {
     if (validateForm()) {
       setUpdating(true);

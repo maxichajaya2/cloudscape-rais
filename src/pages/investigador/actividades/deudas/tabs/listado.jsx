@@ -82,11 +82,18 @@ const columnDefinitions = [
     id: "deuda",
     header: "Deuda",
     cell: (item) => (
-      <Badge color={item.deuda == "Sí" || item.deuda == "SI" ? "red" : "green"}>
+      <Badge
+        color={
+          item.deuda == "Deuda Académica"
+            ? "red"
+            : item.deuda == "Deuda Económica"
+            ? "severity-low"
+            : "grey"
+        }
+      >
         {item.deuda}
       </Badge>
     ),
-
     sortingField: "deuda",
   },
 ];
@@ -139,6 +146,7 @@ export default () => {
     const res = await axiosBase.get("investigador/actividades/deudas/listado");
     const data = res.data;
     setDistribution(data);
+    console.log(data);
     setLoading(false);
   };
 
@@ -156,7 +164,7 @@ export default () => {
       columnDisplay={columnDisplay}
       loading={loading}
       loadingText="Cargando datos"
-      resizableColumns
+      wrapLines
       enableKeyboardNavigation
       header={<Header>Deudas ({distributions.length})</Header>}
       filter={
