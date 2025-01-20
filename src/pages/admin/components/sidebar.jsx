@@ -140,6 +140,10 @@ const navItems = [
       { type: "link", text: "Lista de deudores", href: "#" },
       { type: "divider" },
       { type: "link", text: "Reporte de publicaciones", href: "#" },
+      { type: "link", 
+        text: "Reporte para RR", 
+        href: "/admin/reportes/resolucion_rectoral",
+        info: <Badge color="green">Nuevo</Badge>, },
     ],
   },
   {

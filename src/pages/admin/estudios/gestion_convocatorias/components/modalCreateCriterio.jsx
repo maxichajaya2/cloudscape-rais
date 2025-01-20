@@ -20,7 +20,7 @@ const initialForm = {
   opcion: "",
   puntaje_max: "",
   nivel: { value: 1, label: "Criterio" },
-  periodo: "2024",
+  periodo: "2025",
   editable: { value: 1, label: "Sí" },
   otipo: { value: null, label: "Ninguna" },
   puntos_adicionales: "",

@@ -159,6 +159,9 @@ const Consolidado_general = lazy(() =>
 const Reporte_presupuesto = lazy(() =>
   import("../pages/admin/reportes/presupuesto/index.jsx")
 );
+const Reporte_rr = lazy(() =>
+  import("../pages/admin/reportes/resolucion_rectoral/index.jsx")
+);
 const Reporte_constancias = lazy(() =>
   import("../pages/admin/constancias/reporte_constancias/index.jsx")
 );
@@ -428,6 +431,10 @@ const routes = createBrowserRouter(
         {
           path: "presupuesto",
           element: <Reporte_presupuesto />,
+        },
+        {
+          path: "resolucion_rectoral",
+          element: <Reporte_rr />,
         },
       ],
     },

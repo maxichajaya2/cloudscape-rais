@@ -250,7 +250,7 @@ export default ({ grupo_estado }) => {
     coordinadorGI();
   }, [tipoMiembros]);
 
-  console.log("coordinador", coordinador);
+
   useEffect(() => {
     if (selectedItems.length > 0) {
       setEnableBtn(true);
@@ -267,7 +267,7 @@ export default ({ grupo_estado }) => {
           paddingBottom: coordinador !== 1 ? "20px" : "0",
         }}
       >
-        {coordinador !== 1 ? (
+        {coordinador !== 1 && loading  ? (
           <Alert statusIconAriaLabel="Info" header="Información Importante">
             LOS GRUPOS DE INVESTIGACION DE LA UNIVERSIDAD NACIONAL MAYOR DE SAN
             MARCOS" (RR.N° 014914-2024-R/UNMSM) en su subtítulo VII. Aspectos
@@ -284,7 +284,6 @@ export default ({ grupo_estado }) => {
           columnDisplay={columnDisplay}
           loading={loading}
           loadingText="Cargando datos"
-          resizableColumns
           enableKeyboardNavigation
           wrapLines
           onRowClick={({ detail }) => actions.setSelectedItems([detail.item])}
